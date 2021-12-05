@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Run scheduler server inside docker container
+source /mnt/scheduler/bin/activate && \
+	MAINSPRING_SETTINGS_MODULE=simple_scheduler.settings \
+	python /mnt/scheduler/src/mainspring/simple_scheduler/scheduler.py
