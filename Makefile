@@ -42,5 +42,5 @@ simple:
 	# Uninstall mainspring, so that simple scheduler can pick up non-package code
 	$(SOURCE_VENV) && $(PIP) uninstall -y mainspring || true
 	$(SOURCE_VENV) && \
-		mainspring_SETTINGS_MODULE=simple_scheduler.settings PYTHONPATH=.:$(PYTHONPATH) \
+		MAINSPRING_SETTINGS_MODULE=simple_scheduler.settings PYTHONPATH=.:$(PYTHONPATH) \
 		$(PYTHON) simple_scheduler/scheduler.py
