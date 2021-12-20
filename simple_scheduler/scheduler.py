@@ -1,6 +1,6 @@
 """Run the scheduler process."""
 
-from app.mainspring.server import server
+from mainspring.server import server
 
 
 class SimpleServer(server.SchedulerServer):
