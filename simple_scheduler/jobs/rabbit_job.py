@@ -55,6 +55,7 @@ class RabbitJob(job.JobBase):
                          'So we cannot send rabbit message.')
             raise KeyError('You have to set Environment variable RABBIT_CONFIG_DICT first.')
         else:
+            logger.info("Establishing connection with Rabbit-MQ instance to publish message")
             credentials = pika.PlainCredentials(rabbit['username'], rabbit['password'])
             connection = pika.BlockingConnection(
                 pika.ConnectionParameters(
@@ -89,6 +90,7 @@ class RabbitJob(job.JobBase):
                     )
                 )
             connection.close()
+            logger.info("Rabbit-MQ connection has been closed after successfully publishing the message")
 
 
 if __name__ == "__main__":
