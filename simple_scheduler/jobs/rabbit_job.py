@@ -67,7 +67,7 @@ class RabbitJob(job.JobBase):
             channel = connection.channel()
             message = {"type": message}
             message_bytes = json.dumps(message).encode('utf-8')
-            if properties['reply_to']:
+            if properties and 'reply_to' in properties.keys():
                 channel.basic_publish(
                     exchange=exchange, routing_key=queue, body=message_bytes,
                     properties=pika.BasicProperties(
@@ -94,4 +94,4 @@ class RabbitJob(job.JobBase):
 if __name__ == "__main__":
     # You can easily test this job here
     job = RabbitJob.create_test_instance()
-    job.run('exchange', 'queue', {'type': 'data_sync'}, {'reply_to': 'reply-exchange'})
+    job.run('mainspring-exchange', 'mainspring-requests', 'data_sync')
