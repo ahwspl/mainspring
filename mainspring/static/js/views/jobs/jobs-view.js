@@ -1,7 +1,7 @@
 /**
  * Jobs view.
  *
- * @author wenbin@nextdoor.com
+ * @author darshit.kothari@ahwspl.com
  */
 
 require.config({

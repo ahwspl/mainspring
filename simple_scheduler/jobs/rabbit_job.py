@@ -48,7 +48,6 @@ class RabbitJob(job.JobBase):
             # (not a real api url, don't try it :)
             #
             # You can get this url by adding an incoming webhook:
-            # https://nextdoor.slack.com/apps/new/A0F7XDUAZ-incoming-webhooks
             rabbit = settings.RABBIT_CONFIG_DICT
             host = rabbit['host']
         except KeyError:
