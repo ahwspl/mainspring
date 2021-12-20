@@ -88,6 +88,15 @@ DATABASE_CONFIG_DICT = {
 #     'database': 'scheduler'
 # }
 
+# RABBITMQ
+#
+RABBIT_CONFIG_DICT = {
+    'host': '',
+    'port': '',
+    'username': '',
+    'password': ''
+}
+
 # mainspring is based on apscheduler. Here we can customize the apscheduler's main scheduler class
 # Please see mainspring/core/scheduler/base.py
 SCHEDULER_CLASS = 'mainspring.corescheduler.core.base.BaseScheduler'
