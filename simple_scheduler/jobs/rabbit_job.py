@@ -65,6 +65,7 @@ class RabbitJob(job.JobBase):
                 )
             )
             channel = connection.channel()
+            message = {"type": message}
             message_bytes = json.dumps(message).encode('utf-8')
             if properties['reply_to']:
                 channel.basic_publish(

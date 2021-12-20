@@ -12,3 +12,4 @@ requests
 # Uncomment this if you want to use MySQL as datastore
 #
 pymysql == 0.6.7
+pika == 1.2.0

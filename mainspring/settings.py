@@ -108,4 +108,4 @@ logging.getLogger().setLevel(logging.INFO)
 
 
 # Packages that contains job classes, e.g., simple_scheduler.jobs
-JOB_CLASS_PACKAGES = []
+JOB_CLASS_PACKAGES = ['simple_scheduler.jobs']
