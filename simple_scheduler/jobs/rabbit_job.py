@@ -4,7 +4,7 @@ import pika
 import logging
 import json
 import uuid
-from mainspring.corescheduler import job
+from mainspring import job
 import os
 from mainspring import settings
 

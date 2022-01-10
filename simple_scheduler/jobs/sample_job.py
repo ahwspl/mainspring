@@ -1,6 +1,6 @@
 """A sample job that prints string."""
 
-from mainspring.corescheduler import job
+from mainspring import job
 
 
 class DemoJob(job.JobBase):
