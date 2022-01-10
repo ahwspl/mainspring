@@ -20,15 +20,15 @@ RUN apt-get -qq update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY ./app /mnt/scheduler/src/mainspring/
+#COPY ./app /mnt/scheduler/src/mainspring/
 
 RUN virtualenv /mnt/scheduler && \
     . /mnt/scheduler/bin/activate && \
     pip install -e git+https://github.com/darshitkothari/mainspring.git#egg=mainspring && \
     pip install -r /mnt/scheduler/src/mainspring/simple_scheduler/requirements.txt
 #
-ADD apns.pem /mnt/scheduler/
-ADD run_scheduler /mnt/scheduler/bin/run_scheduler
+ADD simple_scheduler/docker/apns.pem /mnt/scheduler/
+ADD simple_scheduler/docker/run_scheduler /mnt/scheduler/bin/run_scheduler
 RUN chmod 755 /mnt/scheduler/bin/run_scheduler
 
 CMD ["/mnt/scheduler/bin/run_scheduler"]

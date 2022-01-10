@@ -24,23 +24,34 @@ class RabbitJob(job.JobBase):
                       'scheduler with environment variable RABBIT_CONFIG_DICT'),
             'arguments': [
                 # exchange
-                {'type': 'string', 'description': 'What exchange you want the message to be routed from'},
+                {
+                    'type': 'string',
+                    'description': 'What exchange you want the message to be routed from'
+                },
 
                 # channel
-                {'type': 'string', 'description': 'What channel you want to send the message to'},
+                {
+                    'type': 'string',
+                    'description': 'What channel you want to send the message to'
+                },
 
                 # message
-                {'type': 'string', 'description': 'Message object to be sent'},
+                {
+                    'type': 'string',
+                    'description': 'Message object to be sent\n'
+                                   '{"type": "TRIGGER_EVENT_NAME", "body": {"key": "value"}}'
+                },
 
                 # properties
-                {'type': 'string', 'description': 'Additional properties.'},
+                {
+                    'type': 'string', 'description': 'Additional properties.'},
             ],
             'example_arguments': (
-                '["exchange-name", "queue-name", "{"type": "datasync"}", "{"reply_to": "reply-queue"}"]'
+                '["exchange-name", "queue-name", "{\"type\": \"datasync\"}", "{\"reply_to\": \"reply-queue\"}"]'
             )
         }
 
-    def run(self, exchange, queue, message, properties={}, *args, **kwargs):
+    def run(self, exchange, queue, message, properties=None, *args, **kwargs):
 
         try:
             # This URL looks like this:
@@ -50,6 +61,8 @@ class RabbitJob(job.JobBase):
             # You can get this url by adding an incoming webhook:
             rabbit = settings.RABBIT_CONFIG_DICT
             host = rabbit['host']
+            message = json.loads(message)
+            properties = json.loads(properties) if properties is not None else None
         except KeyError:
             logger.error('Environment variable RABBIT_CONFIG_DICT is not specified. '
                          'So we cannot send rabbit message.')
@@ -66,7 +79,6 @@ class RabbitJob(job.JobBase):
                 )
             )
             channel = connection.channel()
-            message = {"type": message}
             message_bytes = json.dumps(message).encode('utf-8')
             if properties and 'reply_to' in properties.keys():
                 channel.basic_publish(
@@ -96,4 +108,8 @@ class RabbitJob(job.JobBase):
 if __name__ == "__main__":
     # You can easily test this job here
     job = RabbitJob.create_test_instance()
-    job.run('mainspring-exchange', 'mainspring-requests', 'data_sync')
+    job.run(
+        exchange='mainspring-exchange',
+        queue='mainspring-requests',
+        message="{\"type\": \"GSUITE_SHARE_CALENDAR\",\"body\":{\"time_period\":\"86400\"}}"
+    )
