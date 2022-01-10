@@ -7,8 +7,8 @@ import logging
 #
 DEBUG = True
 
-HTTP_PORT = 8888
-HTTP_ADDRESS = '0.0.0.0'
+HTTP_PORT = 80
+HTTP_ADDRESS = '127.0.0.1'
 
 #
 # Set logging level
