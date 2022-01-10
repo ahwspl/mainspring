@@ -13,3 +13,4 @@ requests
 #
 pymysql == 0.6.7
 pika == 1.2.0
+requests == 2.9.1

@@ -1,9 +1,15 @@
 """Base class for a job."""
 
+import json
+import logging
 import os
 import socket
 
-from mainspring.corescheduler import utils
+from mainspring import constants
+from mainspring import utils
+from mainspring.core import scheduler_manager
+
+logger = logging.getLogger(__name__)
 
 
 class JobBase:
@@ -58,6 +64,7 @@ class JobBase:
     @classmethod
     def meta_info(cls):
         """Returns meta info for this job class.
+
         For example:
             {
                 'job_class_string': 'myscheduler.jobs.myjob.MyJob',
@@ -70,8 +77,11 @@ class JobBase:
                 'notes': 'need to specify environment variable API_KEY first'
             }
         The arguments property should be consistent with the run() method.
+
         This info will be used in web ui for explaining what kind of arguments is needed for a job.
+
         You should override this function if you want to make your scheduler web ui informative :)
+
         :return: meta info for this job class.
         :rtype: dict
         """
@@ -84,20 +94,42 @@ class JobBase:
 
     @classmethod
     def run_job(cls, job_id, execution_id, *args, **kwargs):
-        """Wrapper to run this job in a static context.
+        """Wrapper to run this job.
+
+        It updates the execution state, i.e., running, succeeded or failed.
+
         :param str job_id: Job id.
         :param str execution_id: Execution id.
         :param args:
         :param kwargs:
         """
-        job = cls(job_id, execution_id)
-        return job.run(*args, **kwargs)
+        scheduler = scheduler_manager.SchedulerManager.get_instance()
+        datastore = scheduler.get_datastore()
+        try:
+            datastore.update_execution(execution_id, state=constants.EXECUTION_STATUS_RUNNING,
+                                       hostname=socket.gethostname(), pid=os.getpid(),
+                                       description=cls.get_running_description())
+            job = cls(job_id, execution_id)
+            result = job.run(*args, **kwargs)
+            result_json = json.dumps(result, indent=4, sort_keys=True)
+            datastore.update_execution(execution_id, state=constants.EXECUTION_STATUS_SUCCEEDED,
+                                       description=cls.get_succeeded_description(result),
+                                       result=result_json)
+        except Exception as e:
+            logger.exception(e)
+            datastore.update_execution(execution_id,
+                                       state=constants.EXECUTION_STATUS_FAILED,
+                                       description=cls.get_failed_description(),
+                                       result=cls.get_failed_result())
 
     def run(self, *args, **kwargs):
         """The "main" function for a job.
+
         Any subclass has to implement this function.
+
         The return value of this function will be stored in the database as json formatted string
         and will be shown for each execution in web ui.
+
         :param args:
         :param kwargs:
         :return: None or json serializable object.

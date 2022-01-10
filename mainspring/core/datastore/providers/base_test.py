@@ -3,18 +3,24 @@
 import datetime
 import unittest
 
-from apscheduler.schedulers.blocking import BlockingScheduler
+from mainspring import constants
+from mainspring.core.datastore.providers import base
 
-from mainspring.corescheduler import constants
-from mainspring.corescheduler.datastore.providers.sqlite import DatastoreSqlite
+
+class SimpleDatastore(base.DatastoreBase):
+
+    @classmethod
+    def get_db_url(cls):
+        return 'sqlite:///'
+
+    def get_time_isoformat_from_db(self, time_object):
+        return time_object
 
 
 class DatastoreBaseTest(unittest.TestCase):
 
     def setUp(self):
-        fake_scheduler = BlockingScheduler()
-        self.store = DatastoreSqlite.get_instance()
-        self.store.start(fake_scheduler, None)
+        self.store = SimpleDatastore.get_instance()
 
     def test_add_execution_get_execution(self):
         eid = '12345'
@@ -48,14 +54,14 @@ class DatastoreBaseTest(unittest.TestCase):
         executions = self.store.get_executions(start_time, end_time)
         self.assertEqual(len(executions['executions']), 2)
 
-    def test_add_audit_log_get_audit_logs(self):
+    def test_add_aduit_log_get_audit_logs(self):
         job_id = '234'
         job_name = 'asdfs'
         event = constants.AUDIT_LOG_ADDED
         user = 'aa'
         description = 'hihi'
 
-        self.store.add_audit_log(job_id, job_name, event, user=user, description=description)
+        self.store.add_audit_log(job_id, job_name, event, user, description)
 
         now = datetime.datetime.utcnow()
         five_min_ago = now - datetime.timedelta(minutes=5)

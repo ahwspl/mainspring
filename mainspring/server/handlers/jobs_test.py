@@ -4,8 +4,8 @@ import json
 
 import tornado.testing
 
-from mainspring.corescheduler import scheduler_manager
-from mainspring.corescheduler import utils
+from mainspring import utils
+from mainspring.core import scheduler_manager
 from mainspring.server import server
 from mainspring.server.handlers import jobs
 
@@ -58,12 +58,7 @@ class JobsTest(tornado.testing.AsyncHTTPTestCase):
         """This is required by tornado.testing."""
         # Shouldn't use singleton here. Or the test will reuse IOLoop and cause
         #   RuntimeError: IOLoop is closing
-        scp = 'mainspring.corescheduler.core.base.BaseScheduler'
-        dcp = 'mainspring.corescheduler.datastore.providers.sqlite.DatastoreSqlite'
-        self.scheduler = scheduler_manager.SchedulerManager(
-            scheduler_class_path=scp,
-            datastore_class_path=dcp
-        )
+        self.scheduler = scheduler_manager.SchedulerManager()
         self.server = server.SchedulerServer(self.scheduler)
         return self.server.application
 
@@ -72,12 +67,12 @@ class JobsTest(tornado.testing.AsyncHTTPTestCase):
         data = {
             'job_class_string': 'hello.world',
             'name': 'hello world job',
-            'minute': '*/5'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
+            'minute': '*/5'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
         return_info = json.loads(response.body.decode())
         self.assertTrue('job_id' in return_info)
-        self.assertEqual(len(return_info['job_id']), 32)
+        self.assertEquals(len(return_info['job_id']), 32)
         job = self.scheduler.get_job(return_info['job_id'])
         self.assertEqual(job.name, data['name'])
 
@@ -85,100 +80,100 @@ class JobsTest(tornado.testing.AsyncHTTPTestCase):
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
         data = {
             'job_class_string': 'hello.world',
-            'name': 'hello world job'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
-        self.assertEqual(response.code, 400)
+            'name': 'hello world job'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
+        self.assertEquals(response.code, 400)
 
         data = {
             'job_class_string': 'hello.world',
-            'minute': '*/5'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
-        self.assertEqual(response.code, 400)
+            'minute': '*/5'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
+        self.assertEquals(response.code, 400)
 
     def test_pause_resume_job(self):
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
         data = {
             'job_class_string': 'hello.world',
             'name': 'hello world job',
-            'minute': '*/5'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
+            'minute': '*/5'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
         return_info = json.loads(response.body.decode())
         self.assertTrue('job_id' in return_info)
-        self.assertEqual(len(return_info['job_id']), 32)
+        self.assertEquals(len(return_info['job_id']), 32)
 
-        response = self.fetch(self.JOBS_URL + '/' + return_info['job_id'], method='PATCH', body='{}')
-        self.assertEqual(response.code, 200)
+        response = self.fetch(self.JOBS_URL + '/' + return_info['job_id'],
+                              method='PATCH', body='{}')
+        self.assertEquals(response.code, 200)
 
         response = self.fetch(self.JOBS_URL + '/' + return_info['job_id'], method='OPTIONS')
-        self.assertEqual(response.code, 200)
+        self.assertEquals(response.code, 200)
 
     def test_get_jobs(self):
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
         data = {
             'job_class_string': 'hello.world',
             'name': 'hello world job',
-            'minute': '*/5'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
+            'minute': '*/5'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
         return_info = json.loads(response.body.decode())
         self.assertTrue('job_id' in return_info)
-        self.assertEqual(len(return_info['job_id']), 32)
+        self.assertEquals(len(return_info['job_id']), 32)
 
         response = self.fetch(self.JOBS_URL + '?sync=true')
         return_info = json.loads(response.body.decode())
-        self.assertEqual(len(return_info['jobs']), 1)
+        self.assertEquals(len(return_info['jobs']), 1)
         job = return_info['jobs'][0]
-        self.assertEqual(job['job_class_string'], data['job_class_string'])
-        self.assertEqual(job['name'], data['name'])
-        self.assertEqual(job['minute'], data['minute'])
+        self.assertEquals(job['job_class_string'], data['job_class_string'])
+        self.assertEquals(job['name'], data['name'])
+        self.assertEquals(job['minute'], data['minute'])
 
     def test_delete_job(self):
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
         data = {
             'job_class_string': 'hello.world',
             'name': 'hello world job',
-            'minute': '*/5'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
+            'minute': '*/5'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
         return_info = json.loads(response.body.decode())
         self.assertTrue('job_id' in return_info)
-        self.assertEqual(len(return_info['job_id']), 32)
+        self.assertEquals(len(return_info['job_id']), 32)
 
-        response = self.fetch(self.JOBS_URL + '/' + return_info['job_id'] + '?sync=true', method='DELETE')
-        self.assertEqual(response.code, 200)
+        response = self.fetch(self.JOBS_URL + '/' + return_info['job_id'] + '?sync=true',
+                              method='DELETE')
+        self.assertEquals(response.code, 200)
 
         response = self.fetch(self.JOBS_URL + '?sync=true')
         return_info = json.loads(response.body.decode())
-        self.assertEqual(len(return_info['jobs']), 0)
+        self.assertEquals(len(return_info['jobs']), 0)
 
     def test_modify_job(self):
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
         data = {
             'job_class_string': 'hello.world',
             'name': 'hello world job',
-            'minute': '*/5'
-        }
-        response = self.fetch(self.JOBS_URL, method='POST', headers=headers, body=json.dumps(data))
+            'minute': '*/5'}
+        response = self.fetch(self.JOBS_URL, method='POST', headers=headers,
+                              body=json.dumps(data))
         return_info = json.loads(response.body.decode())
         self.assertTrue('job_id' in return_info)
-        self.assertEqual(len(return_info['job_id']), 32)
+        self.assertEquals(len(return_info['job_id']), 32)
         job = self.scheduler.get_job(return_info['job_id'])
-        self.assertEqual(utils.get_job_name(job), data['job_class_string'])
-        self.assertEqual(job.name, data['name'])
+        self.assertEquals(utils.get_job_name(job), data['job_class_string'])
+        self.assertEquals(job.name, data['name'])
 
         headers = {'Content-Type': 'application/json; charset=UTF-8'}
         data = {
             'job_class_string': 'hello.world!!!!',
             'name': 'hello world job~~~~',
-            'minute': '*/20'
-        }
-        response = self.fetch(
-            f"{self.JOBS_URL}/{return_info['job_id']}?sync=true", method='PUT', headers=headers, body=json.dumps(data)
-        )
-        self.assertEqual(response.code, 200)
+            'minute': '*/100'}
+        response = self.fetch(self.JOBS_URL + '/' + return_info['job_id'] + '?sync=true',
+                              method='PUT', headers=headers, body=json.dumps(data))
+        self.assertEquals(response.code, 200)
         job = self.scheduler.get_job(return_info['job_id'])
-        self.assertEqual(utils.get_job_name(job), data['job_class_string'])
-        self.assertEqual(job.name, data['name'])
+        self.assertEquals(utils.get_job_name(job), data['job_class_string'])
+        self.assertEquals(job.name, data['name'])

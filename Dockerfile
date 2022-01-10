@@ -20,8 +20,6 @@ RUN apt-get -qq update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#COPY ./app /mnt/scheduler/src/mainspring/
-
 RUN virtualenv /mnt/scheduler && \
     . /mnt/scheduler/bin/activate && \
     pip install -e git+https://github.com/darshitkothari/mainspring.git#egg=mainspring && \

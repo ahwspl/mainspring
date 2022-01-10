@@ -2,7 +2,7 @@
 
 DEBUG = True
 
-DATABASE_CLASS = 'mainspring.corescheduler.datastore.providers.sqlite.DatastoreSqlite'
+DATABASE_CLASS = 'mainspring.core.datastore.providers.sqlite.DatastoreSqlite'
 DATABASE_CONFIG_DICT = {
     # Use in-memory sqlite for unit tests
 }

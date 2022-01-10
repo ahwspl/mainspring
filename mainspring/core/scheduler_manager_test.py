@@ -4,18 +4,15 @@ from builtins import str
 
 import tornado.testing
 
-from mainspring.corescheduler import scheduler_manager
-from mainspring.corescheduler import utils
+from mainspring import utils
+from mainspring.core import scheduler_manager
 
 
 class SchedulerManagerTest(tornado.testing.AsyncTestCase):
     def setUp(self, *args, **kwargs):
         super(SchedulerManagerTest, self).setUp(*args, **kwargs)
 
-        scheduler_class = 'mainspring.corescheduler.core.base.BaseScheduler'
-        datastore_class = 'mainspring.corescheduler.datastore.providers.sqlite.DatastoreSqlite'
-
-        self.scheduler = scheduler_manager.SchedulerManager(scheduler_class, datastore_class)
+        self.scheduler = scheduler_manager.SchedulerManager()
         self.scheduler.start()
 
     def tearDown(self, *args, **kwargs):
@@ -34,9 +31,8 @@ class SchedulerManagerTest(tornado.testing.AsyncTestCase):
         minute = '*/4'
 
         # non-blocking operation
-        job_id = self.scheduler.add_job(
-            task_name, name, pub_args, month, day_of_week, day, hour, minute, languages='en-us'
-        )
+        job_id = self.scheduler.add_job(task_name, name, pub_args, month, day_of_week, day,
+                                        hour, minute, languages='en-us')
 
         self.assertTrue(len(job_id), 32)
 
@@ -49,27 +45,27 @@ class SchedulerManagerTest(tornado.testing.AsyncTestCase):
         self.assertEqual(utils.get_job_kwargs(job), {'languages': 'en-us'})
 
         # Year
-        self.assertEqual(str(job.trigger.fields[0]), '*')
+        self.assertEquals(str(job.trigger.fields[0]), '*')
         # Month
-        self.assertEqual(str(job.trigger.fields[1]), month)
+        self.assertEquals(str(job.trigger.fields[1]), month)
         # day of month
-        self.assertEqual(str(job.trigger.fields[2]), day)
+        self.assertEquals(str(job.trigger.fields[2]), day)
         # week
-        self.assertEqual(str(job.trigger.fields[3]), '*')
+        self.assertEquals(str(job.trigger.fields[3]), '*')
         # day of week
-        self.assertEqual(str(job.trigger.fields[4]), day_of_week)
+        self.assertEquals(str(job.trigger.fields[4]), day_of_week)
         # hour
-        self.assertEqual(str(job.trigger.fields[5]), hour)
+        self.assertEquals(str(job.trigger.fields[5]), hour)
         # minute
-        self.assertEqual(str(job.trigger.fields[6]), minute)
+        self.assertEquals(str(job.trigger.fields[6]), minute)
         # second
-        self.assertEqual(str(job.trigger.fields[7]), '0')
+        self.assertEquals(str(job.trigger.fields[7]), '0')
 
     @tornado.testing.gen_test
     def test_add_job_modify_job(self):
         job_class_string = 'hello.world2'
         name = 'it is hello world 2'
-        pub_args = ('1', '2', '3')
+        pub_args = ['1', '2', '3']
         month = '*/1'
         day_of_week = 'sat'
         day = '*/2'
@@ -85,7 +81,7 @@ class SchedulerManagerTest(tornado.testing.AsyncTestCase):
         job_class_string = 'hello.world1234'
         args = ['5', '6', '7']
         name = 'hello world 3'
-        month = '*/6'
+        month = '*/12'
 
         # non-blocking operation
         self.scheduler.modify_job(job_id, name=name, job_class_string=job_class_string,
@@ -93,14 +89,9 @@ class SchedulerManagerTest(tornado.testing.AsyncTestCase):
 
         # blocking operation
         job = self.scheduler.get_job(job_id)
-        self.assertEqual(job.name, name)
+        self.assertEquals(job.name, name)
 
-        arguments = [
-            job_class_string, job_id,
-            'mainspring.corescheduler.datastore.providers.sqlite.DatastoreSqlite',
-            None,
-            None
-        ]
+        arguments = [job_class_string, job_id]
         arguments += args
-        self.assertEqual(list(job.args), arguments)
-        self.assertEqual(str(job.trigger.fields[1]), month)
+        self.assertEquals(list(job.args), arguments)
+        self.assertEquals(str(job.trigger.fields[1]), month)

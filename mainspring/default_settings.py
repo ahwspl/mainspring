@@ -60,14 +60,14 @@ DATABASE_TABLENAMES = {
 
 # SQLite
 #
-DATABASE_CLASS = 'mainspring.corescheduler.datastore.providers.sqlite.DatastoreSqlite'
+DATABASE_CLASS = 'mainspring.core.datastore.providers.sqlite.DatastoreSqlite'
 DATABASE_CONFIG_DICT = {
     'file_path': 'datastore.db'
 }
 
 # Postgres
 #
-# DATABASE_CLASS = 'mainspring.corescheduler.datastore.providers.postgres.DatastorePostgres'
+# DATABASE_CLASS = 'mainspring.core.datastore.providers.postgres.DatastorePostgres'
 # DATABASE_CONFIG_DICT = {
 #     'user': 'username',
 #     'password': '',
@@ -79,7 +79,7 @@ DATABASE_CONFIG_DICT = {
 
 # MySQL
 #
-# DATABASE_CLASS = 'mainspring.corescheduler.datastore.providers.mysql.DatastoreMySQL'
+# DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
 # DATABASE_CONFIG_DICT = {
 #     'user': 'username',
 #     'password': '',
@@ -90,7 +90,7 @@ DATABASE_CONFIG_DICT = {
 
 # mainspring is based on apscheduler. Here we can customize the apscheduler's main scheduler class
 # Please see mainspring/core/scheduler/base.py
-SCHEDULER_CLASS = 'mainspring.corescheduler.core.base.BaseScheduler'
+SCHEDULER_CLASS = 'mainspring.core.scheduler.base.SingletonScheduler'
 
 #
 # Set logging level

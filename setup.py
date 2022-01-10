@@ -19,6 +19,7 @@ exec(open(os.path.join('mainspring', 'version.py')).read())  # set __version__
 
 
 # -*- Hooks -*-
+
 class CleanHook(clean):
 
     def run(self):
@@ -35,7 +36,8 @@ class CleanHook(clean):
         maybe_rm('.eggs')
         subprocess.call('rm -rf *.egg', shell=True)
         subprocess.call('rm -f datastore.db', shell=True)
-        subprocess.call('find . -name "*.pyc" -exec rm -rf {} \;', shell=True)
+        subprocess.call('find . -name "*.pyc" -exec rm -rf {} \;',
+                        shell=True)
 
 
 # -*- Classifiers -*-
@@ -56,32 +58,35 @@ classes = """
 classifiers = [s.strip() for s in classes.split('\n') if s]
 
 # -*- %%% -*-
+
 setup(
     name=PACKAGE,
     version=__version__,
-    description='mainspring: A cron-replacement library from Ascent',
+    description='mainspring: A cron-replacement library',
     long_description=open('README.md').read(),
     author='Darshit Kothari',
     author_email='darshit.kothari@ahwspl.com',
     url='https://github.com/darshitkothari/mainspring',
     download_url='http://pypi.python.org/pypi/mainspring#downloads',
     license='Apache License, Version 2',
-    keywords='scheduler ascent cron python',
+    keywords='scheduler mainspring cron python',
     packages=find_packages(),
     include_package_data=True,
     extras_require={'python_version<"3.3"': ['funcsigs']},
     tests_require=[
         'funcsigs',
-        'mock >= 1.1.2',
+        'mock == 1.1.2',
         'nose',
     ],
     test_suite='nose.collector',
     install_requires=[
-        'APScheduler >= 3.0.0',
-        'SQLAlchemy >= 1.0.0',
-        'future >= 0.15.2',
-        'tornado < 6',
-        'python-dateutil >= 2.2',
+        # Note mainspring *only* works with 3.0.x.  See the docs for more detail.
+        # https://apscheduler.readthedocs.io/en/latest/migration.html#from-v3-0-to-v3-2
+        'APScheduler == 3.0.0',
+        'SQLAlchemy == 1.0.0',
+        'future == 0.15.2',
+        'tornado == 4.3.0',
+        'python-dateutil == 2.2',
     ],
     classifiers=classifiers,
     cmdclass={'clean': CleanHook},

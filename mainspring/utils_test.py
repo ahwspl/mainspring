@@ -2,7 +2,7 @@
 
 import unittest
 
-from mainspring.corescheduler import utils
+from mainspring import utils
 
 
 class UtilsTest(unittest.TestCase):
