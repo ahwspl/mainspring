@@ -24,7 +24,7 @@ APP_INDEX_PAGE = 'index.html'
 # Server setup
 #
 HTTP_PORT = 7777
-HTTP_ADDRESS = '127.0.0.1'
+HTTP_ADDRESS = '0.0.0.0'
 
 TORNADO_MAX_WORKERS = 8
 
