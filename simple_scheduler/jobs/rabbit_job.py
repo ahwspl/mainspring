@@ -10,7 +10,6 @@ from mainspring import settings
 from pika.adapters import tornado_connection
 import tornado.ioloop
 from pika.exceptions import AMQPConnectionError, AuthenticationError, ProbableAuthenticationError
-from mainspring.server.helpers.rabbit.pika_client import PikaClient
 
 logger = logging.getLogger(__name__)
 

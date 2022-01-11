@@ -17,7 +17,6 @@ from mainspring.server.handlers import audit_logs
 from mainspring.server.handlers import executions
 from mainspring.server.handlers import index
 from mainspring.server.handlers import jobs
-from mainspring.server.helpers.rabbit.pika_client import PikaClient
 
 logger = logging.getLogger(__name__)
 
