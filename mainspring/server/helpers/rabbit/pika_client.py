@@ -3,6 +3,7 @@ import ssl
 from pika.adapters import tornado_connection
 from pika.exceptions import AMQPConnectionError, AuthenticationError, ProbableAuthenticationError
 import logging
+from mainspring import settings
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class PikaClient(object):
         """
         try:
             logger.info("Establishing connection with Rabbit-MQ instance to publish message")
+            rabbit = settings.RABBIT_CONFIG_DICT
             credentials = pika.PlainCredentials(rabbit['username'], rabbit['password'])
             params = pika.ConnectionParameters(
                 host=rabbit['host'],
