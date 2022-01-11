@@ -9,7 +9,7 @@ import os
 from mainspring import settings
 from pika.adapters import tornado_connection
 import tornado.ioloop
-from pika.exceptions import AMQPConnectionError, AuthenticationError, ProbableAuthenticationError
+import pika.exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +71,15 @@ class RabbitJob(job.JobBase):
                          'So we cannot send rabbit message.')
             raise KeyError('You have to set Environment variable RABBIT_CONFIG_DICT first.')
         else:
+            result = {
+                "status": False,
+                "request_body": {
+                    "exchange": exchange,
+                    "queue": queue,
+                    "message": message,
+                    "properties": properties
+                }
+            }
             try:
                 logger.info("Establishing connection with RMQ server, publishing message basis presence of properties")
                 credentials = pika.PlainCredentials(rabbit['username'], rabbit['password'])
@@ -83,6 +92,7 @@ class RabbitJob(job.JobBase):
                     )
                 )
                 channel = connection.channel()
+                channel.confirm_delivery()
                 message_bytes = json.dumps(message).encode('utf-8')
                 if properties and 'reply_to' in properties.keys():
                     channel.basic_publish(
@@ -93,7 +103,8 @@ class RabbitJob(job.JobBase):
                             correlation_id=str(uuid.uuid4()),
                             content_type='application/json',
                             headers={"key": "value"}
-                        )
+                        ),
+                        mandatory=True
                     )
                 else:
                     channel.basic_publish(
@@ -103,20 +114,25 @@ class RabbitJob(job.JobBase):
                             correlation_id=str(uuid.uuid4()),
                             content_type='application/json',
                             headers={"key": "value"}
-                        )
+                        ),
+                        mandatory=True
                     )
 
                 connection.close()
-                logger.info("Rabbit-MQ connection has been closed after successfully publishing the message!")
-            except Exception as e:
-                logger.error(e)
+                result.update(status=True)
+            except Exception as err:
+                # covers all pika exceptions
+                # UnroutableError, AMQPConnectionError, AuthenticationError, ChannelClosedByBroker
+                result.update(message=str(err))
+            return result
 
 
 if __name__ == "__main__":
     # You can easily test this job here
     job = RabbitJob.create_test_instance()
-    job.run(
-        exchange='argon-exchange',
+    data = job.run(
+        exchange='exchange',
         queue='argon-monitor-requests',
         message="{\"type\": \"GSUITE_SHARE_CALENDAR\",\"body\":{\"time_period\":\"86400\"}}"
     )
+    print(data)
