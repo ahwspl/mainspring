@@ -7,6 +7,10 @@ import uuid
 from mainspring import job
 import os
 from mainspring import settings
+from pika.adapters import tornado_connection
+import tornado.ioloop
+from pika.exceptions import AMQPConnectionError, AuthenticationError, ProbableAuthenticationError
+from mainspring.server.helpers.rabbit.publisher import PikaPublisher
 
 logger = logging.getLogger(__name__)
 
@@ -68,20 +72,13 @@ class RabbitJob(job.JobBase):
                          'So we cannot send rabbit message.')
             raise KeyError('You have to set Environment variable RABBIT_CONFIG_DICT first.')
         else:
-            logger.info("Establishing connection with Rabbit-MQ instance to publish message")
-            credentials = pika.PlainCredentials(rabbit['username'], rabbit['password'])
-            connection = pika.BlockingConnection(
-                pika.ConnectionParameters(
-                    host=rabbit['host'],
-                    port=rabbit['port'],
-                    virtual_host="/",
-                    credentials=credentials
-                )
-            )
-            channel = connection.channel()
+            io_loop = tornado.ioloop.IOLoop.current()
+            rmq_publisher = PikaPublisher(io_loop=io_loop)
+            rmq_publisher.connect()
+
             message_bytes = json.dumps(message).encode('utf-8')
             if properties and 'reply_to' in properties.keys():
-                channel.basic_publish(
+                rmq_publisher.channel.basic_publish(
                     exchange=exchange, routing_key=queue, body=message_bytes,
                     properties=pika.BasicProperties(
                         delivery_mode=2,  # make message persistent
@@ -92,7 +89,7 @@ class RabbitJob(job.JobBase):
                     )
                 )
             else:
-                channel.basic_publish(
+                rmq_publisher.channel.basic_publish(
                     exchange=exchange, routing_key=queue, body=message_bytes,
                     properties=pika.BasicProperties(
                         delivery_mode=2,  # make message persistent
@@ -101,7 +98,8 @@ class RabbitJob(job.JobBase):
                         headers={"key": "value"}
                     )
                 )
-            connection.close()
+
+            rmq_publisher.close_connection()
             logger.info("Rabbit-MQ connection has been closed after successfully publishing the message")
 
 
