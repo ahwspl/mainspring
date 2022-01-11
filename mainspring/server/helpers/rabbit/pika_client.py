@@ -2,7 +2,9 @@ import pika
 import ssl
 from pika.adapters import tornado_connection
 from pika.exceptions import AMQPConnectionError, AuthenticationError, ProbableAuthenticationError
-from orchestrator.lib.utils.homalogger import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class PikaClient(object):
