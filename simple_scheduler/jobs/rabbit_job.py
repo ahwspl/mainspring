@@ -110,7 +110,7 @@ class RabbitJob(job.JobBase):
                 connection.close()
                 logger.info("Rabbit-MQ connection has been closed after successfully publishing the message!")
             except Exception as e:
-                logger.error(f"Exception occurred when publishing message on rabbitmq {queue}: {str(e)}")
+                logger.error(f"Exception occurred when publishing message on rabbitmq {queue} queue: " + str(e))
 
 
 if __name__ == "__main__":
