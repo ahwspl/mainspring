@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 
 MAINTAINER Darshit Kothari <darshit.kothari@ahwspl.com>
 
-RUN apt-get update && apt-get install -y \
+RUN apt-update && apt-get update && apt-get install -y \
         software-properties-common
 #    RUN add-apt-repository ppa:deadsnakes/ppa
     RUN apt-get update && apt-get install -y \
@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y \
         python3-setuptools \
         git
     RUN python3.7 -m pip install pip --upgrade pip
+RUN apt install net-tools && apt install curl
 
 RUN apt-get -qq update && \
     apt-get -qq install python-virtualenv git && \
