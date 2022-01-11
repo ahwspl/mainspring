@@ -72,49 +72,52 @@ class RabbitJob(job.JobBase):
                          'So we cannot send rabbit message.')
             raise KeyError('You have to set Environment variable RABBIT_CONFIG_DICT first.')
         else:
-            logger.info("Establishing connection with RMQ server and publishing message basis presence of properties")
-            credentials = pika.PlainCredentials(rabbit['username'], rabbit['password'])
-            connection = pika.BlockingConnection(
-                pika.ConnectionParameters(
-                    host=rabbit['host'],
-                    port=rabbit['port'],
-                    virtual_host="/",
-                    credentials=credentials
-                )
-            )
-            channel = connection.channel()
-            message_bytes = json.dumps(message).encode('utf-8')
-            if properties and 'reply_to' in properties.keys():
-                channel.basic_publish(
-                    exchange=exchange, routing_key=queue, body=message_bytes,
-                    properties=pika.BasicProperties(
-                        delivery_mode=2,  # make message persistent
-                        reply_to=properties['reply_to'],
-                        correlation_id=str(uuid.uuid4()),
-                        content_type='application/json',
-                        headers={"key": "value"}
+            try:
+                logger.info("Establishing connection with RMQ server, publishing message basis presence of properties")
+                credentials = pika.PlainCredentials(rabbit['username'], rabbit['password'])
+                connection = pika.BlockingConnection(
+                    pika.ConnectionParameters(
+                        host=rabbit['host'],
+                        port=rabbit['port'],
+                        virtual_host="/",
+                        credentials=credentials
                     )
                 )
-            else:
-                channel.basic_publish(
-                    exchange=exchange, routing_key=queue, body=message_bytes,
-                    properties=pika.BasicProperties(
-                        delivery_mode=2,  # make message persistent
-                        correlation_id=str(uuid.uuid4()),
-                        content_type='application/json',
-                        headers={"key": "value"}
+                channel = connection.channel()
+                message_bytes = json.dumps(message).encode('utf-8')
+                if properties and 'reply_to' in properties.keys():
+                    channel.basic_publish(
+                        exchange=exchange, routing_key=queue, body=message_bytes,
+                        properties=pika.BasicProperties(
+                            delivery_mode=2,  # make message persistent
+                            reply_to=properties['reply_to'],
+                            correlation_id=str(uuid.uuid4()),
+                            content_type='application/json',
+                            headers={"key": "value"}
+                        )
                     )
-                )
+                else:
+                    channel.basic_publish(
+                        exchange=exchange, routing_key=queue, body=message_bytes,
+                        properties=pika.BasicProperties(
+                            delivery_mode=2,  # make message persistent
+                            correlation_id=str(uuid.uuid4()),
+                            content_type='application/json',
+                            headers={"key": "value"}
+                        )
+                    )
 
-            connection.close()
-            logger.info("Rabbit-MQ connection has been closed after successfully publishing the message!")
+                connection.close()
+                logger.info("Rabbit-MQ connection has been closed after successfully publishing the message!")
+            except Exception as e:
+                logger.error(f"Exception occurred when publishing message on rabbitmq {queue}: {str(e)}")
 
 
 if __name__ == "__main__":
     # You can easily test this job here
     job = RabbitJob.create_test_instance()
     job.run(
-        exchange='mainspring-exchange',
-        queue='mainspring-requests',
+        exchange='argon-exchange',
+        queue='argon-monitor-requests',
         message="{\"type\": \"GSUITE_SHARE_CALENDAR\",\"body\":{\"time_period\":\"86400\"}}"
     )
