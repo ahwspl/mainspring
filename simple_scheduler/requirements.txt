@@ -12,4 +12,4 @@
 pymysql == 0.6.7
 pika == 1.2.0
 requests >= 2.20.0
-enum == 1.1.10
+enum34 == 1.1.10

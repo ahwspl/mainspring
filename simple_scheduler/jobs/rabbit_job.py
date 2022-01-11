@@ -10,7 +10,7 @@ from mainspring import settings
 from pika.adapters import tornado_connection
 import tornado.ioloop
 from pika.exceptions import AMQPConnectionError, AuthenticationError, ProbableAuthenticationError
-from mainspring.server.helpers.rabbit.publisher import PikaPublisher
+from mainspring.server.helpers.rabbit.pika_client import PikaClient
 
 logger = logging.getLogger(__name__)
 
@@ -72,13 +72,14 @@ class RabbitJob(job.JobBase):
                          'So we cannot send rabbit message.')
             raise KeyError('You have to set Environment variable RABBIT_CONFIG_DICT first.')
         else:
+            logger.info("Establishing connection with RMQ server and publishing message basis presence of propeeties")
             io_loop = tornado.ioloop.IOLoop.current()
-            rmq_publisher = PikaPublisher(io_loop=io_loop)
-            rmq_publisher.connect()
+            rmq_client = PikaClient(io_loop=io_loop)
+            rmq_client.connect()
 
             message_bytes = json.dumps(message).encode('utf-8')
             if properties and 'reply_to' in properties.keys():
-                rmq_publisher.channel.basic_publish(
+                rmq_client.channel.basic_publish(
                     exchange=exchange, routing_key=queue, body=message_bytes,
                     properties=pika.BasicProperties(
                         delivery_mode=2,  # make message persistent
@@ -89,7 +90,7 @@ class RabbitJob(job.JobBase):
                     )
                 )
             else:
-                rmq_publisher.channel.basic_publish(
+                rmq_client.channel.basic_publish(
                     exchange=exchange, routing_key=queue, body=message_bytes,
                     properties=pika.BasicProperties(
                         delivery_mode=2,  # make message persistent
@@ -99,8 +100,8 @@ class RabbitJob(job.JobBase):
                     )
                 )
 
-            rmq_publisher.close_connection()
-            logger.info("Rabbit-MQ connection has been closed after successfully publishing the message")
+            rmq_client.close_connection()
+            logger.info("Rabbit-MQ connection has been closed after successfully publishing the message!")
 
 
 if __name__ == "__main__":
