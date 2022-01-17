@@ -1,10 +1,10 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 MAINTAINER Darshit Kothari <darshit.kothari@ahwspl.com>
 
 RUN apt-get update && apt-get install -y \
         software-properties-common
-    RUN add-apt-repository ppa:deadsnakes/ppa
+#    RUN add-apt-repository ppa:deadsnakes/ppa
     RUN apt-get update && apt-get install -y \
         python3 \
         python3-pip
@@ -14,10 +14,11 @@ RUN apt-get update && apt-get install -y \
         python3-setuptools \
         git
     RUN python3 -m pip install pip --upgrade pip
-RUN apt-get install net-tools && apt-get install curl
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
+# RUN apt-get install net-tools && apt-get install curl
 
 RUN apt-get -qq update && \
+    apt-get install -y virtualenv && \
     apt-get -qq install python3-virtualenv git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
