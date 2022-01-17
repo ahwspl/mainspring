@@ -23,7 +23,7 @@ RUN apt-get -qq update && \
 
 RUN virtualenv /mnt/scheduler && \
     . /mnt/scheduler/bin/activate && \
-    pip install -e git+https://github.com/darshitkothari/mainspring.git#egg=mainspring && \
+    pip install -e git+https://github.com/ahwspl/mainspring.git#egg=mainspring && \
     pip install -r /mnt/scheduler/src/mainspring/simple_scheduler/requirements.txt
 #
 #ADD simple_scheduler/docker/apns.pem /mnt/scheduler/

@@ -66,7 +66,7 @@ setup(
     long_description=open('README.md').read(),
     author='Darshit Kothari',
     author_email='darshit.kothari@ahwspl.com',
-    url='https://github.com/darshitkothari/mainspring',
+    url='https://github.com/ahwspl/mainspring',
     download_url='http://pypi.python.org/pypi/mainspring#downloads',
     license='Apache License, Version 2',
     keywords='scheduler mainspring cron python',

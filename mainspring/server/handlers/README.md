@@ -20,7 +20,7 @@
 ## Run it NOW
 ```bash
     # Start server
-    $ git clone https://github.com/darshitkothari/mainspring.git
+    $ git clone https://github.com/ahwspl/mainspring.git
     $ cd mainspring
     $ make simple
    
