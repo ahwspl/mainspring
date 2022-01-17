@@ -28,6 +28,7 @@ RUN virtualenv /mnt/scheduler && \
     pip install -r /mnt/scheduler/src/mainspring/simple_scheduler/requirements.txt
 #
 #ADD simple_scheduler/docker/apns.pem /mnt/scheduler/
+ADD mainspring/settings.py /mnt/scheduler/src/mainspring/mainspring
 ADD simple_scheduler/docker/run_scheduler /mnt/scheduler/bin/run_scheduler
 RUN chmod 755 /mnt/scheduler/bin/run_scheduler
 
