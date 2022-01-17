@@ -2,7 +2,11 @@
 
 import logging
 import os
+import environ
 
+# reading the env file
+env = environ.Env()
+environ.Env.read_env()
 
 #
 # Development mode or production mode
@@ -57,44 +61,42 @@ DATABASE_TABLENAMES = {
 }
 
 # See different database providers in mainspring/core/datastore/providers/
-
-# SQLite
-#
-DATABASE_CLASS = 'mainspring.core.datastore.providers.sqlite.DatastoreSqlite'
-DATABASE_CONFIG_DICT = {
-    'file_path': 'datastore.db'
-}
-
-# Postgres
-#
-# DATABASE_CLASS = 'mainspring.core.datastore.providers.postgres.DatastorePostgres'
-# DATABASE_CONFIG_DICT = {
-#     'user': 'username',
-#     'password': '',
-#     'hostname': 'localhost',
-#     'port': 5432,
-#     'database': 'scheduler',
-#     'sslmode': 'disable'
-# }
-
-# MySQL
-#
-# DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
-# DATABASE_CONFIG_DICT = {
-#     'user': 'username',
-#     'password': '',
-#     'hostname': 'localhost',
-#     'port': 3306,
-#     'database': 'scheduler'
-# }
+DATABASE = env("DATABASE")
+if DATABASE == "Postgres":
+    # Postgres
+    DATABASE_CLASS = 'mainspring.core.datastore.providers.postgres.DatastorePostgres'
+    DATABASE_CONFIG_DICT = {
+        'user': env("DB_USER"),
+        'password': env("DB_PASS"),
+        'hostname': env("DB_HOST"),
+        'port': env("DB_PORT"),
+        'database': env("DB_NAME"),
+        'sslmode': 'disable'
+    }
+elif DATABASE == "MySQL":
+    # MySQL
+    DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
+    DATABASE_CONFIG_DICT = {
+        'user': env("DB_USER"),
+        'password': env("DB_PASS"),
+        'hostname': env("DB_HOST"),
+        'port': env("DB_PORT"),
+        'database': env("DB_NAME"),
+    }
+else:
+    # Sqlite
+    DATABASE_CLASS = 'mainspring.core.datastore.providers.sqlite.DatastoreSqlite'
+    DATABASE_CONFIG_DICT = {
+        'file_path': 'datastore.db'
+    }
 
 # RABBITMQ
 #
 RABBIT_CONFIG_DICT = {
-    'host': '10.150.0.27',
-    'port': 5672,
-    'username': 'admin',
-    'password': '321@admin'
+    'host': env("RABBIT_HOST"),
+    'port': env("RABBIT_PORT"),
+    'username': env("RABBIT_USER"),
+    'password': env("RABBIT_PASS")
 }
 
 # mainspring is based on apscheduler. Here we can customize the apscheduler's main scheduler class
