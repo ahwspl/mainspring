@@ -61,7 +61,7 @@ DATABASE_TABLENAMES = {
 }
 
 # See different database providers in mainspring/core/datastore/providers/
-DATABASE = env("DATABASE")
+DATABASE = env("DATABASE", "MySQL")
 if DATABASE == "Postgres":
     # Postgres
     DATABASE_CLASS = 'mainspring.core.datastore.providers.postgres.DatastorePostgres'
@@ -69,21 +69,21 @@ if DATABASE == "Postgres":
         'user': env("DB_USER"),
         'password': env("DB_PASS"),
         'hostname': env("DB_HOST"),
-        'port': env("DB_PORT"),
-        'database': env("DB_NAME"),
+        'port': env("DB_PORT", 5432),
+        'database': env("DB_NAME", "argon-scheduler"),
         'sslmode': 'disable'
     }
 elif DATABASE == "MySQL":
     # MySQL
     DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
     DATABASE_CONFIG_DICT = {
-        'user': env("DB_USER"),
-        'password': env("DB_PASS"),
-        'hostname': env("DB_HOST"),
-        'port': env("DB_PORT"),
-        'database': env("DB_NAME"),
+        'user': env("DB_USER", "airisbad"),
+        'password': env("DB_PASS", "lukeffUdnoodPhosDilHuif6"),
+        'hostname': env("DB_HOST", "ascent-it.cijfstakmq3t.ap-south-1.rds.amazonaws.com"),
+        'port': env("DB_PORT", 3306),
+        'database': env("DB_NAME", "argon-scheduler"),
     }
-else:
+elif DATABASE == "Sqlite":
     # Sqlite
     DATABASE_CLASS = 'mainspring.core.datastore.providers.sqlite.DatastoreSqlite'
     DATABASE_CONFIG_DICT = {
