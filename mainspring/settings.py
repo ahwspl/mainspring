@@ -62,7 +62,7 @@ DATABASE_TABLENAMES = {
 
 # See different database providers in mainspring/core/datastore/providers/
 # MySQL
-DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
+DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMysql'
 DATABASE_CONFIG_DICT = {
     'user': "root",
     'password': "password",
