@@ -15,7 +15,7 @@ import logging
 import os
 import sys
 
-from mainspring import settings
+from mainspring import settings as default_settings
 
 logger = logging.getLogger()
 ch = logging.StreamHandler(sys.stdout)

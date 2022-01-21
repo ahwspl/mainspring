@@ -2,11 +2,11 @@
 
 import logging
 import os
-import environ
+# import environ
 
 # reading the env file
-env = environ.Env()
-environ.Env.read_env()
+# env = environ.Env()
+# environ.Env.read_env()
 
 #
 # Development mode or production mode
@@ -61,42 +61,23 @@ DATABASE_TABLENAMES = {
 }
 
 # See different database providers in mainspring/core/datastore/providers/
-DATABASE = env("DATABASE")
-if DATABASE == "Postgres":
-    # Postgres
-    DATABASE_CLASS = 'mainspring.core.datastore.providers.postgres.DatastorePostgres'
-    DATABASE_CONFIG_DICT = {
-        'user': env("DB_USER"),
-        'password': env("DB_PASS"),
-        'hostname': env("DB_HOST"),
-        'port': env("DB_PORT", 5432),
-        'database': env("DB_NAME"),
-        'sslmode': 'disable'
-    }
-elif DATABASE == "MySQL":
-    # MySQL
-    DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
-    DATABASE_CONFIG_DICT = {
-        'user': env("DB_USER"),
-        'password': env("DB_PASS"),
-        'hostname': env("DB_HOST"),
-        'port': env("DB_PORT", 3306),
-        'database': env("DB_NAME"),
-    }
-elif DATABASE == "Sqlite":
-    # Sqlite
-    DATABASE_CLASS = 'mainspring.core.datastore.providers.sqlite.DatastoreSqlite'
-    DATABASE_CONFIG_DICT = {
-        'file_path': 'datastore.db'
-    }
+# MySQL
+DATABASE_CLASS = 'mainspring.core.datastore.providers.mysql.DatastoreMySQL'
+DATABASE_CONFIG_DICT = {
+    'user': "root",
+    'password': "password",
+    'hostname': "172.20.64.1",
+    'port': 3306,
+    'database': "mainspring",
+}
 
 # RABBITMQ
 #
 RABBIT_CONFIG_DICT = {
-    'host': env("RABBIT_HOST"),
-    'port': env("RABBIT_PORT"),
-    'username': env("RABBIT_USER"),
-    'password': env("RABBIT_PASS")
+    'host': "10.150.0.27",
+    'port': 5672,
+    'username': "guest",
+    'password': "guest"
 }
 
 # mainspring is based on apscheduler. Here we can customize the apscheduler's main scheduler class
