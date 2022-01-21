@@ -1,12 +1,12 @@
-"""Settings and configuration for ndscheduler.
+"""Settings and configuration for mainspring.
 
 This will create a settings module that overrides default
 settings (from the default_settings module) and it will override
 those settings with values found in the module specified by the
-NDSCHEDULER_SETTINGS_MODULE environment variable.
+MAINSPRING_SETTINGS_MODULE environment variable.
 
-Any machine that wants to run a scheduler powered by ndscheduler MUST have
-NDSCHEDULER_SETTINGS_MODULE as an environment variable or this module
+Any machine that wants to run a scheduler powered by mainspring MUST have
+MAINSPRING_SETTINGS_MODULE as an environment variable or this module
 will raise an exception.
 """
 
@@ -15,7 +15,7 @@ import logging
 import os
 import sys
 
-from mainspring import default_settings
+from mainspring import settings
 
 logger = logging.getLogger()
 ch = logging.StreamHandler(sys.stdout)
