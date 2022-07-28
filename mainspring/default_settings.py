@@ -91,10 +91,10 @@ DATABASE_CONFIG_DICT = {
 # RABBITMQ
 #
 RABBIT_CONFIG_DICT = {
-    'host': '10.150.0.27',
+    'host': '10.195.0.79',
     'port': 5672,
-    'username': 'admin',
-    'password': '321@admin'
+    'username': 'mainspring',
+    'password': 'Admin@123'
 }
 
 # mainspring is based on apscheduler. Here we can customize the apscheduler's main scheduler class
