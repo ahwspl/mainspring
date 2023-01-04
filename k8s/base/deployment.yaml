@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: -deployment
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 3
+  template:
+    spec:
+      serviceAccountName: -sa
+      containers:
+        - name: <Container name>
+          image: <Bitbucket repo Name>:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: <Appliction Port>
+          readinessProbe:
+            httpGet:
+              path: <health check URL, example - /health>
+              port: <Appliction Port, example - 8080>
+            initialDelaySeconds: <Wait in seconds before hitting the health check api, example - 30>
+            periodSeconds: <Frequency of health check API, example - 30>
+            timeoutSeconds: <Health api timeout, example - 5>
+            failureThreshold: <thresold failure count before the container restart, example - 5>
+          livenessProbe:
+            tcpSocket:
+              port: <Appliction Port, example - 8080>
+            initialDelaySeconds: <Wait in seconds before hitting the health check api, example - 30>
+            periodSeconds: <Frequency of health check API, example - 30>
+            timeoutSeconds: <Health api timeout, example - 5>
+            failureThreshold: <thresold failure count before the container restart, example - 5>
+          env:
+            - name: VARIABLE_NAME_1
+              value: VARIABLE_VALUE_1
+            - name: VARIABLE_NAME_2
+              value: VARIABLE_NAME_2
+          envFrom:
+          - secretRef:
+              name: "-secret<This should be present for mounting vault values as env variables.>"
+          - configMapRef:
+              name: "-configmap<This should be present for mounting vault values as env variables.>"
+          resources:
+            limits:
+              cpu: <Maximum CPU cores for application, example - 100m>
+              memory: <Maximum CPU cores for application, example - 150Mi>
+            requests:
+              cpu: <Minimum CPU cores for application, example - 50m>
+              memory: <Maximum CPU cores for application, example - 50Mi>
+          volumeMounts:
+            - name: "<Volume name for mounting configmap, example - gatekeeper-service-volume>"
+              mountPath: "<Volume mount path inside container example - config"
+      volumes:
+        - name: <Volume name for mounting configmap, example - gatekeeper-service-volume>
+          configMap:
+            name: "-configmap"
+            items:
+              - key: <Config Map key name>
+                path: <Config Map key path>
+      nodeSelector:
+        workloadType: <Node selector given by devops team or already existing in older template>
