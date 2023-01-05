@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: -configmap
+data:
+  application.yml: |
+    key: value
+    key2:value

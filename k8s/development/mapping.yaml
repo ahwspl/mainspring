@@ -1,0 +1,7 @@
+apiVersion: getambassador.io/v2
+kind: Mapping
+metadata:
+  name: -mapping
+spec:
+  host: <Host header>
+  service: $(SERVICE_NAME).$(SERVICE_NAMESPACE):80
